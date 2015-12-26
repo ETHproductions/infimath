@@ -1,4 +1,5 @@
 String.prototype.repeat=String.prototype.repeat||function(x){return Array(~~x+1).join(this)};
+
 infimath = {
 	alignNums:function(){
 		var args;
@@ -26,10 +27,10 @@ infimath = {
 	
 	formatNum:function(x){
 		return x
-		  .replace(/0+$/,"")
-		  .replace(/\.$/,"")
-		  .replace(/^0/,"")
-		  .replace(/^\./,"0.");
+            .replace(/(.)0+$/,"$1")
+            .replace(/\.$/,"")
+            .replace(/^0(.)/,"$1")
+            .replace(/^\./,"0.");
 	},
 	
 	exp10:function(x,y){
@@ -48,6 +49,10 @@ infimath = {
 		return x;
 	},
 	
+	addAligned:function(args){
+		return args.reduce(function(a,b){return infimath.addTwo(a,b)});
+	},
+	
 	addTwo:function(x,y){
 		var e=x.indexOf(".");
 		x=x.replace(/\./,"");
@@ -61,9 +66,12 @@ infimath = {
 	},
 	
 	add:function(){
-		var args=[].slice.call(arguments);
+		var args;
+		if(typeof(arguments[0])=="object") args=arguments[0];
+		else args=[].slice.call(arguments);
+		args.push("0");
 		args=infimath.alignNums(args);
-		var r=args.reduce(function(a,b){return infimath.addTwo(a,b)});
+		var r=infimath.addAligned(args);
 		return infimath.formatNum(r);
 	}
 };
