@@ -27,9 +27,12 @@ infimath = {
 	
 	formatNum:function(x){
 		return x
-            .replace(/(.)0+$/,"$1")
-            .replace(/\.$/,"")
-            .replace(/^0(.)/,"$1")
+            .replace(/^0+/g,"") // Bwahaha... Grandma's secret 0-trimming trick:
+            .replace(/\..+/g,function(z){return z.replace(/0/g," ")})
+                                // replace 0's after the decimal point with spaces,
+            .trim()             // trim off the extras,
+            .replace(/ /g,"0")  // and switch the 0's back.
+            .replace(/\.$/,"")  // Evil, isn't it? >:-)
             .replace(/^\./,"0.");
 	},
 	
@@ -49,11 +52,9 @@ infimath = {
 		return x;
 	},
 	
-	addAligned:function(args){
-		return args.reduce(function(a,b){return infimath.addTwo(a,b)});
-	},
-	
 	addTwo:function(x,y){
+        var p=infimath.alignNums(x,y);
+        x=p[0],y=p[1];
 		var e=x.indexOf(".");
 		x=x.replace(/\./,"");
 		y=y.replace(/\./,"");
@@ -62,16 +63,15 @@ infimath = {
 		for(r=0,i=a.length;i--;){a[i]+=r;r=0;if(a[i]>9)r=a[i]/10|0,a[i]%=10;}
 		a.splice(e+1,0,".");
 		a=a.join("");
-		return a;
+		return infimath.formatNum(a);
 	},
 	
 	add:function(){
 		var args;
 		if(typeof(arguments[0])=="object") args=arguments[0];
 		else args=[].slice.call(arguments);
-		args.push("0");
-		args=infimath.alignNums(args);
-		var r=infimath.addAligned(args);
+		if(args.length<1) return "0";
+		var r=args.reduce(infimath.addTwo);
 		return infimath.formatNum(r);
 	}
 };
