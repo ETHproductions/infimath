@@ -72,7 +72,7 @@ infimath = {
 		if(typeof(arguments[0])=="object") args=arguments[0];
 		else args=[].slice.call(arguments);
 		if(args.length<1) return "0";
-		var r=args.reduce(infimath.addTwo);
+		var r=args.map(String).reduce(infimath.addTwo);
 		return infimath.formatNum(r);
 	}
 };
