@@ -39,14 +39,15 @@ infimath = {
 	exp10:function(x,y){
 		if(typeof(y)=="undefined")x.replace(/([\d.]+)e([+-]?\d+)/i,function(_,a,b){x=a,y=b});
 		x=""+x,y=+y;
+		if(x.indexOf(".")<0)x+=".";
 		function swap2(z){return z[1]+z[0]}
 		if(y>0){
-			while(/\.\d/.test(x)&&y--)
-				x=x.replace(/\.\d/,swap2);
+			while(/\.\d/.test(x)&&y)
+				x=x.replace(/\.\d/,swap2),y--;
 			x=x.replace(/\./,function(){return"0".repeat(y)+"."});
 		}else if(y<0){
-			while(/\d\./.test(x)&&y++)
-				x=x.replace(/\d\./,swap2);
+			while(/\d\./.test(x)&&y)
+				x=x.replace(/\d\./,swap2),y++;
 			x=x.replace(/\./,function(){return"."+"0".repeat(-y)});
 		}
 		return x;
