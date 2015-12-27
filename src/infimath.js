@@ -76,3 +76,5 @@ infimath = {
 		return infimath.formatNum(r);
 	}
 };
+
+String.prototype.plus=function(){var args=typeof(arguments[0])=="object"?arguments[0]:[].slice.call(arguments);args.unshift(this);return infimath.add(args)}
