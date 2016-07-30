@@ -2,9 +2,8 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-		<title>infimath.js - Arbitrary-precision math library</title>
+		<title>Basic tests | infimath.js</title>
 		<script src="../src/infimath.js" type="text/javascript"></script>
-		<link rel="stylesheet" type="text/css" href="../../ethproductions.github.io/style/style.css">
 		<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro|Source+Code+Pro" rel="stylesheet"> 
 		
 		<style>
@@ -18,16 +17,23 @@
 			
 			.mono {
 				font-family: "Source Code Pro", monospace;
+				font-size: 0.85em;
 			}
 		</style>
 	<head>
 	<body>
 		<h2><a href="../index.html">infimath.js</a></h2>
-		<p id="errors"></p>
+		<p>Tests of <span class="mono">BigNumber()</span> and <span class="mono">BigNumber.prototype.toString()</span></p>
+		<p id="errors" class="mono"></p>
+		Test some code here:<br>
+		<textarea id="code" class="mono" rows=7 cols=50>BigNumber(1234.56)</textarea><br>
+		<button onclick="$('result').innerHTML=eval($('code').value)">Go</button><br>
+		<p id="result" class="mono"></p>
 		
 		<script>
+			function $(x){return document.getElementById(x)}
 			function log() {
-				debug && console.log.apply(console, arguments);
+				console.log.apply(console, arguments);
 			}
 			function warn() {
 				var args = [].slice.call(arguments);
@@ -166,9 +172,8 @@
 			];
 			
 			var n = 0,
-					s = 0,
-					t = 0,
-					debug = true;
+				s = 0,
+				t = 0;
 			for (var i of tests) {
 				t++;
 				if (4 in i) t++;
@@ -207,7 +212,7 @@
 					warn('BigNumber("%s").toString() failed. ("%s"; expected "%s")', i[0], n, i[4]);
 				}
 			}
-			warn("");
+			t !== s && warn("");
 			warn("%d/%d tests successful. (%.2f%)", s, t, s/t*100);
 			warn("See browser console for more information.");
 		</script>

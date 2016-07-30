@@ -5,18 +5,22 @@
  *   </rant>
  */
 
+// Creates a new BigNumber object.
 function BigNumber(x) {
 	if(!(this instanceof BigNumber)) return new BigNumber(x);
 	if(x === undefined) return this;
 	return BigNumber.parse(x);
 }
 
+// Creates a new BigNumber object.
 BigNumber.parse = function(x) {
+	if (x instanceof BigNumber) return x;
 	var orig = x;
 	var result = new BigNumber();
 	result.data = [];
 	result.decs = 0;
 	result.sign = 0;
+	result.queue = [];
 
 	if (typeof x !== "string") {
 		x += ""; // Force input to be a string
@@ -107,8 +111,73 @@ BigNumber.parse = function(x) {
 	}
 
 	return result;
-}
+};
 
+// Aligns the data of two BigNumbers by padding either side with zeroes.
+BigNumber.align = function (a, b) {
+	while (a.decs < b.decs) {
+		if (1 in b.data && b.data[0] === 0) {
+			b.data.shift();
+			b.decs--;
+		} else {
+			a.data.unshift(0);
+			a.decs++;
+		}
+	}
+	while (a.decs > b.decs) {
+		if (1 in a.data && a.data[0] === 0) {
+			a.data.shift();
+			a.decs--;
+		} else {
+			b.data.unshift(0);
+			b.decs++;
+		}
+	}
+	
+	while (a.data.length < b.data.length) {
+		if (1 in b.data && b.data.slice(-1)[0] === 0) {
+			b.data.pop();
+		} else {
+			a.data.push(0);
+		}
+	}
+	while (a.data.length > b.data.length) {
+		if (1 in a.data && a.data.slice(-1)[0] === 0) {
+			a.data.pop();
+		} else {
+			b.data.push(0);
+		}
+	}
+};
+
+// Compares two BigNumbers, returning -1 if the first is smaller, +1 if the first is larger, or 0 if they are equal
+// If opts is {aligned: true, ignoreSign: true}, the function will skip the alignment step and ignore the signs of the numbers.
+BigNumber.compare = function(a, b, opts) {
+	opts = opts || {};
+	opts.aligned || BigNumber.align(a, b);
+	if (!opts.ignoreSign) {
+		if (a.sign < b.sign) return -1;
+		else if (a.sign > b.sign) return +1;
+	}
+	for (var i = a.data.length; --i >= 0; ) {
+		if (a.data[i] < b.data[i]) {
+			if (!opts.ignoreSign) {
+				return -a.sign;
+			} else {
+				return -1;
+			}
+		} else if (a.data[i] > b.data[i]) {
+			if (!opts.ignoreSign) {
+				return +a.sign;
+			} else {
+				return +1;
+			}
+		}
+	}
+	return 0;
+};
+
+// Converts the BigNumber to a string containing its nuerical data.
 BigNumber.prototype.toString = function() {
 	var decs = this.decs,
 		str = "",
@@ -131,7 +200,78 @@ BigNumber.prototype.toString = function() {
 
 	// Return str.
 	return str;
-}
+};
+
+// Pushes an addition operation to the queue.
+BigNumber.prototype.plus = function () {
+	var args = [].slice.call(arguments);
+	for (var i in args) {
+		this.queue.push(["plus", BigNumber(args[i])]);
+	}
+	return this;
+};
+
+// Pushes a subtraction operation to the queue.
+BigNumber.prototype.minus = function () {
+	var args = [].slice.call(arguments);
+	for (var i in args) {
+		var b = BigNumber(args[i]);
+		b.sign = -b.sign;
+		this.queue.push(["plus", b]);
+	}
+	return this;
+};
+
+// Empties the BigNumber's calculation queue.
+BigNumber.prototype.calculate = function (x) {
+	if (typeof x === "function") {
+		return x(this.calculate());
+	}
+	for (var i = 0; i < this.queue.length; i++) {
+		var arr = this.queue[i];
+		var item = arr[1];
+		item.calculate();
+		if (arr[0] === "plus") {
+			if (item.sign === 0) {
+				continue;
+			} else if (this.sign === 0){
+				this.data = item.data;
+				this.decs = item.decs;
+				this.sign = item.sign;
+			} else if (this.sign === item.sign) {
+				BigNumber.align(this, item);
+				for (var carry = 0, j = 0; j < item.data.length; j++) {
+					this.data[j] += item.data[j] + carry;
+					carry = +(this.data[j] >= 1e3);
+					this.data[j] %= 1e3;
+				}
+				carry && this.data.push(1);
+			} else {
+				BigNumber.align(this, item);
+				this.sign = this.sign * BigNumber.compare(this, item, {aligned:true, ignoreSign:true});
+				for (var carry = 0, j = 0; j < this.data.length; j++) {
+					this.data[j] -= item.data[j] + carry;
+					carry = +(this.data[j] < 0);
+					this.data[j] += 1e3;
+					this.data[j] %= 1e3;
+				}
+				if (carry) {
+					var c = 0;
+					this.data = this.data.map(function(x, y) { return (x -= c) > 0 ? (y ? 999 : 1e3) - x : (c = 1, 0); });
+				}
+			}
+		}
+	}
+	
+	while (1 in this.data && this.data[0] === 0) {
+		this.data.shift();
+		this.decs--;
+	}
+	while (1 in this.data && this.data.slice(-1)[0] === 0) {
+		this.data.pop();
+	}
+	return this;
+};
 
 /* Addendum
  *   I might have liked JSLint, if it was the kind of person who fixes your code for you
