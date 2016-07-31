@@ -1,0 +1,31 @@
+{
+  "name": "infimath.js",
+  "version": "0.0.1",
+  "description": "Arbitrary-precision math library.",
+  "main": "src/infimath.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ETHproductions/infimath.js.git"
+  },
+  "keywords": [
+    "bignumber",
+    "math"
+  ],
+  "author": "ETHproductions",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ETHproductions/infimath.js/issues"
+  },
+  "homepage": "https://github.com/ETHproductions/infimath.js#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3",
+    "mocha-clean": "^1.0.0"
+  }
+}

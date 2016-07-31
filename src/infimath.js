@@ -277,3 +277,5 @@ BigNumber.prototype.calculate = function (x) {
  *   I might have liked JSLint, if it was the kind of person who fixes your code for you
  *   instead of the person from https://xkcd.com/1513/.
  */
+
+module.exports = BigNumber;
