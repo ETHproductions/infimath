@@ -1,7 +1,7 @@
 {
   "name": "infimath",
   "version": "0.0.1",
-  "description": "Arbitrary-precision math library.",
+  "description": "A WIP arbitrary-precision math library.",
   "main": "index.js",
   "directories": {
     "test": "tests"
@@ -26,5 +26,6 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.0.0"
-  }
+  },
+  "private": true
 }
