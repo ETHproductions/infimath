@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && ./coverage/lcov.info>./node_modules/coveralls/bin/coveralls.js 2>&1 && rm -rf ./coverage"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -25,10 +25,7 @@
   "homepage": "https://github.com/ETHproductions/infimath#readme",
   "devDependencies": {
     "chai": "^3.5.0",
-    "coveralls": "^2.11.12",
-    "istanbul": "^0.4.4",
-    "mocha": "^3.0.0",
-    "mocha-lcov-reporter": "^1.2.0"
+    "mocha": "^3.0.0"
   },
   "private": true
 }
