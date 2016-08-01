@@ -5,6 +5,8 @@
  *   </rant>
  */
 
+"use strict";
+
 // Creates a new BigNumber object.
 function BigNumber(x) {
 	if(!(this instanceof BigNumber)) return new BigNumber(x);
@@ -278,4 +280,4 @@ BigNumber.prototype.calculate = function (x) {
  *   instead of the person from https://xkcd.com/1513/.
  */
 
-module.exports = BigNumber;
+typeof module !== "undefined" && (module.exports = BigNumber);
