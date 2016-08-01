@@ -7,7 +7,8 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha && node node_modules/istanbul-coveralls/"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,8 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "coveralls": "^2.11.12",
+    "istanbul": "^0.4.4",
+    "istanbul-coveralls": "^1.0.3",
     "mocha": "^3.0.0"
   },
   "private": true
