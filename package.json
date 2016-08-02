@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "istanbul cover ./node_modules/mocha/bin/_mocha && node ./node_modules/coveralls/bin/coveralls.js ./coverage/lcov.info"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
