@@ -118,37 +118,30 @@ BigNumber.parse = function(x) {
 // Aligns the data of two BigNumbers by padding either side with zeroes.
 BigNumber.align = function (a, b) {
 	while (a.decs < b.decs) {
-		if (1 in b.data && b.data[0] === 0) {
-			b.data.shift();
-			b.decs--;
-		} else {
-			a.data.unshift(0);
-			a.decs++;
-		}
+		a.data.unshift(0);
+		a.decs++;
 	}
 	while (a.decs > b.decs) {
-		if (1 in a.data && a.data[0] === 0) {
-			a.data.shift();
-			a.decs--;
-		} else {
-			b.data.unshift(0);
-			b.decs++;
-		}
+		b.data.unshift(0);
+		b.decs++;
 	}
 	
 	while (a.data.length < b.data.length) {
-		if (1 in b.data && b.data.slice(-1)[0] === 0) {
-			b.data.pop();
-		} else {
-			a.data.push(0);
-		}
+		a.data.push(0);
 	}
 	while (a.data.length > b.data.length) {
-		if (1 in a.data && a.data.slice(-1)[0] === 0) {
-			a.data.pop();
-		} else {
-			b.data.push(0);
-		}
+		b.data.push(0);
+	}
+	
+	while (1 in a.data && 1 in b.data && a.data[0] === 0 && b.data[0] === 0) {
+		a.data.shift();
+		b.data.shift();
+		a.decs--;
+		b.decs--;
+	}
+	while (1 in a.data && 1 in b.data && a.data.slice(-1)[0] === 0 && b.data.slice(-1)[0] === 0) {
+		a.data.pop();
+		b.data.pop();
 	}
 };
 
@@ -262,6 +255,8 @@ BigNumber.prototype.calculate = function (x) {
 					this.data = this.data.map(function(x, y) { return (x -= c) > 0 ? (y ? 999 : 1e3) - x : (c = 1, 0); });
 				}
 			}
+		} else {
+			throw new Error("Could not understand queued operation: " + arr[0]);
 		}
 	}
 	
