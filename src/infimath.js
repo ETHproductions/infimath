@@ -217,6 +217,17 @@ BigNumber.prototype.minus = function () {
 	return this;
 };
 
+// Pushes a multiplication operation to the queue.
+BigNumber.prototype.times = function () {
+	var args = [].slice.call(arguments);
+	for (var i in args) {
+		var b = BigNumber(args[i]);
+		b.sign = b.sign;
+		this.queue.push(["times", b]);
+	}
+	return this;
+};
+
 // Empties the BigNumber's calculation queue.
 BigNumber.prototype.calculate = function (x) {
 	if (typeof x === "function") {
@@ -255,10 +266,42 @@ BigNumber.prototype.calculate = function (x) {
 					this.data = this.data.map(function(x, y) { return (x -= c) > 0 ? (y ? 999 : 1e3) - x : (c = 1, 0); });
 				}
 			}
+		} else if (arr[0] === "times") {
+			this.decs += item.decs;
+			this.sign *= item.sign;
+			if (this.sign === 0 || item.sign === 0) {
+				this.data = [0];
+				this.decs = 0;
+			} else if (this.data.length === 1 && this.data[0] === 1) {
+				this.data = item.data;
+			} else if (item.data.length === 1 && item.data[0] === 1) {
+				// this.data doesn't need to change
+			} else {
+				var a = [],
+					i = 0,
+					j = 0;
+				for (; i < this.data.length + item.data.length; ++i) {
+					a.push(0);
+				}
+				for (i = 0; i < this.data.length; ++i) {
+					for (j = 0; j < item.data.length; ++j) {
+						a[i + j] += this.data[i] * item.data[j];
+					}
+				}
+				var l = a.length;
+				a.push(0);
+				for (i = 0; i < l; ++i) {
+					a[i + 1] += a[i] / 1e3 | 0;
+					a[i] %= 1e3;
+				}
+				this.data = a;
+			}
 		} else {
 			throw new Error("Could not understand queued operation: " + arr[0]);
 		}
 	}
+	
+	this.queue = []; // Empty queue
 	
 	while (1 in this.data && this.data[0] === 0) {
 		this.data.shift();

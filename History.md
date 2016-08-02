@@ -1,3 +1,10 @@
+# 0.0.2 / 2016-08-02
+
+- Added BigNumber.prototype.plus(a[, b][, c...]) - Pushes multiplication operations to the stack. Does not change the value of `this`.
+- Now integrated with [Travis CI](https://travis-ci.org/ETHproductions/infimath) and [Coveralls.io](https://coveralls.io/github/ETHproductions/infimath), using Mocha and Istanbul.
+- Added more tests to bring the coverage up to 100%.
+- Bug fix: BigNumber.prototype.calculate() does not empty the queue.
+
 # 0.0.1 / 2016-08-01
 
 - Added BigNumber function/object - can be called as `BigNumber(x)` or `new BigNumber(x)`.
