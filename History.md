@@ -1,4 +1,4 @@
-# 0.0.3 / 2016-08-02
+# 0.0.3 / 2016-08-13
 
 - Added BigNumber.prototype.negate() - Pushes a negation operation to the queue. Does not change the value of `this`.
 - Added BigNumber.prototype.compare/cmp(b[, opts]) - Returns BigNumber.compare(this, b, opts).
