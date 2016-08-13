@@ -1,3 +1,5 @@
+/*jshint node: true */
+
 /* Preface
  *   Quote by JSLint:
  *   "There is exactly one right way to write your code, and anyone who doesn't write this way is a complete and total moron."
@@ -147,9 +149,12 @@ BigNumber.align = function (a, b) {
 
 // Compares two BigNumbers, returning -1 if the first is smaller, +1 if the first is larger, or 0 if they are equal
 // If opts is {aligned: true, ignoreSign: true}, the function will skip the alignment step and ignore the signs of the numbers.
-BigNumber.compare = function(a, b, opts) {
+BigNumber.compare = BigNumber.cmp = function(a, b, opts) {
+	if (!(a instanceof BigNumber) || !(b instanceof BigNumber)) {
+		throw new TypeError("Cannot compare non-BigNumbers");
+	}
 	opts = opts || {};
-	opts.aligned || BigNumber.align(a, b);
+	if (!opts.aligned) BigNumber.align(a, b);
 	if (!opts.ignoreSign) {
 		if (a.sign < b.sign) return -1;
 		else if (a.sign > b.sign) return +1;
@@ -170,6 +175,25 @@ BigNumber.compare = function(a, b, opts) {
 		}
 	}
 	return 0;
+};
+
+BigNumber.prototype.compare = BigNumber.prototype.cmp = function(b, opts) {
+	return BigNumber.compare(this, b, opts);
+};
+
+// Returns `true` if `this` is less than the input.
+BigNumber.prototype.less = BigNumber.prototype.lt = function(b, opts) {
+	return BigNumber.compare(this, b, opts) === -1;
+};
+
+// Returns `true` if `this` is greater than the input.
+BigNumber.prototype.greater = BigNumber.prototype.gt = function(b, opts) {
+	return BigNumber.compare(this, b, opts) === +1;
+};
+
+// Returns `true` if `this` is equal to the input.
+BigNumber.prototype.equal = BigNumber.prototype.eq = function(b, opts) {
+	return BigNumber.compare(this, b, opts) ===  0;
 };
 
 // Converts the BigNumber to a string containing its nuerical data.
@@ -228,15 +252,22 @@ BigNumber.prototype.times = function () {
 	return this;
 };
 
+// Pushes a negation operation to the queue.
+BigNumber.prototype.negate = function () {
+	this.queue.push(["negate"]);
+	return this;
+};
+
 // Empties the BigNumber's calculation queue.
 BigNumber.prototype.calculate = function (x) {
 	if (typeof x === "function") {
 		return x(this.calculate());
 	}
-	for (var i = 0; i < this.queue.length; i++) {
+	var i, j, carry;
+	for (i = 0; i < this.queue.length; i++) {
 		var arr = this.queue[i];
 		var item = arr[1];
-		item.calculate();
+		if (item) item.calculate();
 		if (arr[0] === "plus") {
 			if (item.sign === 0) {
 				continue;
@@ -246,16 +277,16 @@ BigNumber.prototype.calculate = function (x) {
 				this.sign = item.sign;
 			} else if (this.sign === item.sign) {
 				BigNumber.align(this, item);
-				for (var carry = 0, j = 0; j < item.data.length; j++) {
+				for (carry = 0, j = 0; j < item.data.length; j++) {
 					this.data[j] += item.data[j] + carry;
 					carry = +(this.data[j] >= 1e3);
 					this.data[j] %= 1e3;
 				}
-				carry && this.data.push(1);
+				if (carry) this.data.push(1);
 			} else {
 				BigNumber.align(this, item);
 				this.sign = this.sign * BigNumber.compare(this, item, {aligned:true, ignoreSign:true});
-				for (var carry = 0, j = 0; j < this.data.length; j++) {
+				for (carry = 0, j = 0; j < this.data.length; j++) {
 					this.data[j] -= item.data[j] + carry;
 					carry = +(this.data[j] < 0);
 					this.data[j] += 1e3;
@@ -277,10 +308,8 @@ BigNumber.prototype.calculate = function (x) {
 			} else if (item.data.length === 1 && item.data[0] === 1) {
 				// this.data doesn't need to change
 			} else {
-				var a = [],
-					i = 0,
-					j = 0;
-				for (; i < this.data.length + item.data.length; ++i) {
+				var a = [];
+				for (i = 0, j = 0; i < this.data.length + item.data.length; ++i) {
 					a.push(0);
 				}
 				for (i = 0; i < this.data.length; ++i) {
@@ -296,6 +325,8 @@ BigNumber.prototype.calculate = function (x) {
 				}
 				this.data = a;
 			}
+		} else if (arr[0] === "negate") {
+			this.sign *= -1;
 		} else {
 			throw new Error("Could not understand queued operation: " + arr[0]);
 		}
@@ -318,4 +349,4 @@ BigNumber.prototype.calculate = function (x) {
  *   instead of the person from https://xkcd.com/1513/.
  */
 
-typeof module !== "undefined" && (module.exports = BigNumber);
+if (typeof module === "object") module.exports = BigNumber;

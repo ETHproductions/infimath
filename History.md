@@ -1,6 +1,15 @@
+# 0.0.3 / 2016-08-02
+
+- Added BigNumber.prototype.negate() - Pushes a negation operation to the queue. Does not change the value of `this`.
+- Added BigNumber.prototype.compare/cmp(b[, opts]) - Returns BigNumber.compare(this, b, opts).
+- Added BigNumber.prototype.less/lt(b[, opts]) - Returns `true` if `this` is less than `b`.
+- Added BigNumber.prototype.greater/gt(b[, opts]) - Returns `true` if `this` is greater than `b`.
+- Added BigNumber.prototype.equal/eq(b[, opts]) - Returns `true` if `this` is equal to `b`.
+- BigNumber.compare now throws an error if one of the arguments is not a BigNumber.
+
 # 0.0.2 / 2016-08-02
 
-- Added BigNumber.prototype.plus(a[, b][, c...]) - Pushes multiplication operations to the stack. Does not change the value of `this`.
+- Added BigNumber.prototype.plus(a[, b][, c...]) - Pushes multiplication operations to the queue. Does not change the value of `this`.
 - Now integrated with [Travis CI](https://travis-ci.org/ETHproductions/infimath) and [Coveralls.io](https://coveralls.io/github/ETHproductions/infimath), using Mocha and Istanbul.
 - Added more tests to bring the coverage up to 100%.
 - Bug fix: BigNumber.prototype.calculate() does not empty the queue.
@@ -17,6 +26,6 @@
 	- sign - The sign of the number (`-1` for negative, `0` for zero, `+1` for positive).
 	- queue - The operations requested to be performed on the number. Emptied with calculate().
     - toString() - Returns a string representation of the number that the BigNumber represents.
-    - plus(a[, b][, c...]) - Pushes addition operations to the stack. Does not change the value of `this`.
-    - minus(a[, b][, c...]) - Pushes subtraction operations to the stack. Does not change the value of `this`.
+    - plus(a[, b][, c...]) - Pushes addition operations to the queue. Does not change the value of `this`.
+    - minus(a[, b][, c...]) - Pushes subtraction operations to the queue. Does not change the value of `this`.
     - calculate() - Empties the queue by performing all requested calculations and updating the value of `this`.

@@ -48,4 +48,72 @@ tests.forEach(function(test) {
 			expect(BigNumber.compare(a, b, test[2])).to.equal(test[3]);
 		});
 	});
+	
+	describe('BigNumber(' + test[0] + ').compare(BigNumber("' + test[1] + '", ' + JSON.stringify(test[2]) + '))', function() {
+		var a = BigNumber(test[0]),
+			b = BigNumber(test[1]);
+		it('should return ' + test[3], function() {
+			expect(a.compare(b, test[2])).to.equal(test[3]);
+		});
+	});
+	
+	describe('BigNumber(' + test[0] + ').less(BigNumber("' + test[1] + '", ' + JSON.stringify(test[2]) + '))', function() {
+		var a = BigNumber(test[0]),
+			b = BigNumber(test[1]);
+		it('should return ' + test[3], function() {
+			expect(a.less(b, test[2])).to.equal(test[3] === -1);
+		});
+	});
+	
+	describe('BigNumber(' + test[0] + ').greater(BigNumber("' + test[1] + '", ' + JSON.stringify(test[2]) + '))', function() {
+		var a = BigNumber(test[0]),
+			b = BigNumber(test[1]);
+		it('should return ' + test[3], function() {
+			expect(a.greater(b, test[2])).to.equal(test[3] === +1);
+		});
+	});
+	
+	describe('BigNumber(' + test[0] + ').equal(BigNumber("' + test[1] + '", ' + JSON.stringify(test[2]) + '))', function() {
+		var a = BigNumber(test[0]),
+			b = BigNumber(test[1]);
+		it('should return ' + test[3], function() {
+			expect(a.equal(b, test[2])).to.equal(test[3] ===  0);
+		});
+	});
+});
+
+describe('BigNumber.compare(BigNumber(1))', function() {
+	var error = false;
+	it('should error', function() {
+		try {
+			BigNumber.compare(BigNumber(1));
+		} catch (e) {
+			error = true;
+		}
+		expect(error).to.be.true;
+	});
+});
+
+describe('BigNumber.compare(BigNumber(1), 1)', function() {
+	var error = false;
+	it('should error', function() {
+		try {
+			BigNumber.compare(BigNumber(1), 1);
+		} catch (e) {
+			error = true;
+		}
+		expect(error).to.be.true;
+	});
+});
+
+describe('BigNumber.compare(1, BigNumber(1))', function() {
+	var error = false;
+	it('should error', function() {
+		try {
+			BigNumber.compare(1, BigNumber(1));
+		} catch (e) {
+			error = true;
+		}
+		expect(error).to.be.true;
+	});
 });
